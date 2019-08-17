@@ -1,0 +1,16 @@
+{
+        "Image path" : "/mnt/data/Dev/LogicSim/TestFiles/Counter8.png",
+        "Peripherals" :
+        [
+                {
+                       "Class" : "LEDArray",
+                       "Initializer" : [[26, 6], [6, 1], [8, 1], [10, 1], [12, 1], [14, 1], [16, 1], [18, 1], [20, 1]]
+                },
+                {
+                        "Class" : "Clock",
+                        "Initializer" : { "X" : 26, "Y" : 6, "Period" : 10}
+                }
+
+        ]
+}
+

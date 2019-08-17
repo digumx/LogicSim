@@ -1,0 +1,6 @@
+#ignore binaries
+binaries/*
+binaries
+
+#ignore vim configs
+.ycm_extra_conf.py

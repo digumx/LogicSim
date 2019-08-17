@@ -1,0 +1,46 @@
+{
+        "Image path" : "Counter-Adder.png",
+        "Peripherals" :
+        [
+                {
+                        "Class" : "LEDArray",
+                        "Initializer" : 
+                        [
+                                {"X" : 27, "Y" : 30, "Label" : "S_A: "},
+                                {"X" : 7, "Y" : 25, "Label" : " A: "},
+                                {"X" : 9, "Y" : 25, "Label" : ""},
+                                {"X" : 11, "Y" : 25, "Label" : ""},
+                                {"X" : 13, "Y" : 25, "Label" : ""},
+                                {"X" : 15, "Y" : 25, "Label" : ""},
+                                {"X" : 17, "Y" : 25, "Label" : ""},
+                                {"X" : 19, "Y" : 25, "Label" : ""},
+                                {"X" : 21, "Y" : 25, "Label" : ""},
+                                {"X" : 31, "Y" : 28, "Label" : " S_B: "},
+                                {"X" : 26, "Y" : 8, "Label" : " B: "},
+                                {"X" : 26, "Y" : 10, "Label" : ""},
+                                {"X" : 26, "Y" : 12, "Label" : ""},
+                                {"X" : 26, "Y" : 14, "Label" : ""},
+                                {"X" : 26, "Y" : 16, "Label" : ""},
+                                {"X" : 26, "Y" : 18, "Label" : ""},
+                                {"X" : 26, "Y" : 20, "Label" : ""},
+                                {"X" : 26, "Y" : 22, "Label" : ""},
+                                {"X" : 7, "Y" : 7, "Label" : " A+B: "},
+                                {"X" : 9, "Y" : 7, "Label" : ""},
+                                {"X" : 11, "Y" : 7, "Label" : ""},
+                                {"X" : 13, "Y" : 7, "Label" : ""},
+                                {"X" : 15, "Y" : 7, "Label" : ""},
+                                {"X" : 17, "Y" : 7, "Label" : ""},
+                                {"X" : 19, "Y" : 7, "Label" : ""},
+                                {"X" : 20, "Y" : 7, "Label" : ""}
+                        ]
+                },
+                {
+                        "Class" : "BitSwitchArray",
+                        "Initializer" : 
+                        [
+                                {"X" : 27, "Y" : 30, "Key" : 97},
+                                {"X" : 31, "Y" : 28, "Key" : 98} 
+                        ]
+                }
+        ]
+}

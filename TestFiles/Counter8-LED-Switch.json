@@ -1,0 +1,32 @@
+{
+       "Image path" : "/mnt/data/Dev/LogicSim/TestFiles/Counter8.png",
+       "Peripherals" :
+       [
+               {
+                       "Class" : "LEDArray",
+                       "Initializer" : 
+                       [
+                               {"X" : 26, "Y" : 6, "Label" : "Switch state: "}, 
+                               {"X" : 6, "Y" : 1, "Label" : " Counter output: "}, 
+                               {"X" : 8, "Y" : 1, "Label" : ""}, 
+                               {"X" : 10, "Y" : 1, "Label" : ""}, 
+                               {"X" : 12, "Y" : 1, "Label" : ""}, 
+                               {"X" : 14, "Y" : 1, "Label" : ""}, 
+                               {"X" : 16, "Y" : 1, "Label" : ""}, 
+                               {"X" : 18, "Y" : 1, "Label" : ""}, 
+                               {"X" : 20, "Y" : 1, "Label" : ""} 
+                       ]
+               },
+               {
+                       "Class" : "BitSwitchArray",
+                       "Initializer" :
+                       [
+                               {
+                                       "X" : 26,
+                                       "Y" : 6,
+                                       "Key" : 115
+                               }
+                       ]
+               }
+       ]
+}
