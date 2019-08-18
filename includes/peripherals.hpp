@@ -17,6 +17,11 @@
 namespace lgs
 {
         /*
+         * Forward declaration of class PrintSection
+         */
+        class PrintSection;
+
+        /*
          * An abstract base class for defining the peripheral interface.
          */
         class Peripheral
@@ -37,15 +42,16 @@ namespace lgs
          *                          all LEDs are printed as <Label><State><Label><State>... in a single line. The label can be a null string to 
          *                          produce the effect of printing two or more states consecutively, as <State><State>...
          *
-         * NOTE: Because of how the printing to standard output is handled, this class is single instance. This is maintained using an assert in the
-         *       constructor.
+         * NOTE: Note, multiple LEDArrays are allowed, but because of how adding PrintSections are handled, multiple LEDArrays will appear in an order
+         *       relative to themselves that is reverse of the order they appear in the JSON file. Their order with respect to any other PrintSection's
+         *       order of appearance is undefined. In general, it is currently difficult to control order within PrintSections in general.
          */
         class LEDArray : public Peripheral
         {
                 private:
-                        static bool has_instance;
                         std::vector<std::pair<int, int>> led_pos;
                         std::vector<std::string> led_labels;
+                        lgs::PrintSection* section;
                 public:
                         LEDArray(const nlohmann::json& initJson);
                         void tick(const bool* stateR, bool* stateW, int w, int h) override;

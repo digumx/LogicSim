@@ -18,21 +18,20 @@
 
 using namespace lgs;
 
-bool LEDArray::has_instance = false;
 
 LEDArray::LEDArray(const nlohmann::json& initJson) : Peripheral(initJson)
 {
-        if(has_instance)
-        {
-                lgs::print("Cannot have multiple LEDArray peripherals\n");
-                lgs::exitNcursesMode(true);
-        }
-        has_instance = true;
+        // Initialize from JSON
         for(nlohmann::json::const_iterator led = initJson.begin(); led != initJson.end(); ++led)
         {
                 led_pos.push_back(std::pair<int, int>((*led)["X"].get<int>(), (*led)["Y"].get<int>()));
                 led_labels.push_back((*led)["Label"].get<std::string>());
         }
+
+#ifndef LGS_DEBUG_LEDARRAY_OFF
+        // Get PrintSection
+        section = new PrintSection();
+#endif
 }
 
 void LEDArray::tick(const bool* stateR, bool* stateW, int w, int h) 
@@ -49,7 +48,9 @@ void LEDArray::tick(const bool* stateR, bool* stateW, int w, int h)
         str << "\n";
         
         
-        lgs::printAtTop(str.str());
+#ifndef LGS_DEBUG_LEDARRAY_OFF
+        section->setText(str.str());
+#endif
 }
 
 BitSwitchArray::BitSwitchArray(const nlohmann::json& initJson) : Peripheral(initJson)
@@ -147,7 +148,8 @@ void CharStreamPrinter::tick(const bool* stateR, bool* stateW, int w, int h)
 Peripheral* lgs::peripheralFromJson(const nlohmann::json& periJson)
 {
         std::string cls = periJson["Class"].get<std::string>();
-        if(cls == std::string("LEDArray")) return new LEDArray(periJson["Initializer"]);
+        if(cls == std::string("LEDArray")) 
+                return new LEDArray(periJson["Initializer"]);
         else if(cls == std::string("BitSwitchArray")) return new BitSwitchArray(periJson["Initializer"]);
         else if(cls == std::string("Clock")) return new Clock(periJson["Initializer"]);
         else if(cls == std::string("Keyboard")) return new Keyboard(periJson["Initializer"]);

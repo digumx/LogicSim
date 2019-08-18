@@ -15,6 +15,9 @@ namespace lgs
 {
         // Forward declaration
         class Peripheral;
+#ifdef LGS_PROFILE
+        class PrintSection;
+#endif
 
         /*
          * A CPU worker class that simulates a specified chunk of the logic board. Handles its own state memory.
@@ -35,6 +38,7 @@ namespace lgs
                         int profile_n_ticks;
                         std::chrono::steady_clock::duration profile_time_logic;
                         std::chrono::steady_clock::duration profile_time_peripherals;
+                        PrintSection* prof_sec;
 #endif 
 
 

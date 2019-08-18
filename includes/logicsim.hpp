@@ -5,8 +5,19 @@
 #ifndef LGS_INCLUDE_LOGIC_SIM
 #define LGS_INCLUDE_LOGIC_SIM 
 
-// FOR DEBUGGING
-//#define LGS_DEBUG
+/*
+ * Turn this on for the profiler
+ */
+//#define LGS_PROFILE
+
+#ifdef LGS_PROFILE
+
+/*
+ * The number of samples to average over
+ */
+#define LGS_PROFILE_N_SAMPLES 100
+
+#endif
 
 /*
  * The default number of ticks for which to simulate. Negative values indicate indefinite simulation.
@@ -44,16 +55,6 @@
 #define LGS_GIF_COLOR_1_G 255
 #define LGS_GIF_COLOR_1_B 255
 #define LGS_GIF_COLOR_1_A 255
-
-/*
- * The number of ticks over which to average tick timing and the number of ticks after which to print timing data is stored in LGS_PROFILE_TICKS.
- * This provides a default value
- */
-#ifdef LGS_PROFILE
-#ifndef LGS_PROFILE_TICKS
-#define LGS_PROFILE_TICKS 256
-#endif
-#endif
 
 /*
  * The number of milliseconds to wait between listening for keyboard events. Use the time-keyboard script to find the system-specific optimal value.

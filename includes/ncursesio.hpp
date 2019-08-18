@@ -38,14 +38,18 @@ namespace lgs
         void waitForKey();
 
         /*
-         * Print string to screen.
+         * Print string to bottommost part of screen.
          */
         void print(const std::string& str);
 
         /*
          * Represents a section of the screen that can hold text. The text can be added to or replaced.
+         * There can be multiple PrintSections, but the total length of text plus margins must fit 
+         * comfortably within the screen, otherwise undefined behavior occurs. The bottommost section is 
+         * not the part of any PrintSection - it is the exclusive target for print(above).
+         * PrintSections can solely be constructed via the getPrintSection... functions.
          */
-        class PrintSecion
+        class PrintSection
         {
                 private:
                         PrintSection* next;
@@ -53,19 +57,26 @@ namespace lgs
                         int beg_lin;
                         std::string text;
 
-                        void print_update();
-                        void print_update_child( int width);        // Recursively prints all succeeding sections,
+                        void print_update();                        // Print text.
+                        void print_update_next();                   // Recursively prints all succeeding sections,
                                                                     // and updates beg_lin for each section. Arguement is
                                                                     // screen width. Returns total length of all print
-                                                                    // sections.v
-        }
-        
-        /*
-         * Print string at top of the screen. Note that resizing the screen may garble the output, in general it is a good
-         * idea to avoid resizing ncurses terminal screens. Also note that subsequent prints may overwrite the printed string
-         */
-        void printAtTop(const std::string& str);
+                                                                    // sections.
+                
+                public:
 
+                        PrintSection();                             // Construct new print section at top of screen.
+                        PrintSection(PrintSection* nxt);            // Construct new print section after nxt.
+
+                        void addToEnd(const std::string& str);              // Add string to end of text.
+                        void setText(const std::string& txt);               // Set the test.
+                        void addToEnd(const std::string&& str);             // Rvalue reference overloads.
+                        void setText(const std::string&& txt);             
+                        void addBackspace(size_t n);                        // Delete n characters from the end of the string.
+                        void reprint();                                     // Print contents immediately.
+
+        };
+         
         /*
          * Deletes the character immediately before the cursor and moves cursor to the left by one character, does nothing if 
          * at end of line. Essentially does what printing a backspace character would do.
@@ -73,7 +84,7 @@ namespace lgs
         void backspace();
 
         /*
-         * Clears screen, including the top section of the screen.
+         * Clears screen, but does not clear out the PrintSections - simply redraws them.
          */
         void clearScreen();
 

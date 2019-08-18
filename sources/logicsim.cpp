@@ -8,6 +8,8 @@
 #include <fstream>
 #include <cstdlib>
 #include <cassert>
+#include <chrono>
+#include <sstream>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -110,9 +112,7 @@ int main(int argc, char** argv)
         circuit_json_file >> circuit_json;
 
         std::string image_path_str = circuit_json["Image path"].get<std::string>();
-#ifdef LGS_DEBUG
-        lgs::print(image_path_str.c_str());
-#endif
+        
         if(image_path_str[0] != '/')               // If image path is not absolute, convert the relative to JSON path to relative to cwd
         {
                 std::size_t i = json_path_str.find_last_of('/');
@@ -154,12 +154,29 @@ int main(int argc, char** argv)
         lgs::print("Press any key to start simulation.\n");
         lgs::waitForKey();
         lgs::clearScreen();
+
+#ifdef LGS_PROFILE
+        // Initialize for profiling
+        PrintSection* prof_sec = new PrintSection();
+        std::chrono::steady_clock::time_point tp1, tp2;
+        int n_samps = 0;
+        std::chrono::microseconds tick_time, sim_step_time;
+#endif
+
+        // Start simulation
         CPUWorker worker(circuit_data, circuit_width, circuit_height, peripherals);
         int n_ticks_out = 0;
         uint8_t* frame = new uint8_t[circuit_width * circuit_height * 4 * scale_factor * scale_factor];
         for(int i = 0; i != sim_length; i++)
         {
+#ifdef LGS_PROFILE
+                tp1 = std::chrono::steady_clock::now();
+#endif
                 worker.tickSimulation();
+#ifdef LGS_PROFILE
+                tp2 = std::chrono::steady_clock::now();
+                tick_time += std::chrono::duration_cast<std::chrono::microseconds>(tp2-tp1);
+#endif
                 n_ticks_out++;
                 if(n_ticks_out == print_step)
                 {
@@ -168,6 +185,24 @@ int main(int argc, char** argv)
                         lgs::stateToFrame(frame, state, circuit_width, circuit_height, scale_factor);
                         GifWriteFrame(&out_writer, frame, circuit_width * scale_factor, circuit_height * scale_factor, frametime);
                 }
+#ifdef LGS_PROFILE
+                tp2 = std::chrono::steady_clock::now();
+                sim_step_time += std::chrono::duration_cast<std::chrono::microseconds>(tp2-tp1);
+                n_samps++;
+                if(n_samps >= LGS_PROFILE_N_SAMPLES)
+                {
+                        float sim_step_avg = sim_step_time.count() / (n_samps * 1.0f);
+                        float tick_avg = tick_time.count() / (n_samps * 1.0f);
+                        std::stringstream str;
+                        str << "Main profiler.\n";
+                        str << "Simulation step time: " << sim_step_avg << " microseconds, Tick time: " << tick_avg << " microseconds, ";
+                        str << "averaged over " << n_samps;
+                        prof_sec->setText(str.str());
+                        n_samps = 0;
+                        sim_step_time = std::chrono::microseconds(0);
+                        tick_time = std::chrono::microseconds(0);
+                }
+#endif
         }
         const bool* state = worker.getState();
         lgs::stateToFrame(frame, state, circuit_width, circuit_height, scale_factor);

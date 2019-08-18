@@ -7,14 +7,11 @@
 #include <peripherals.hpp>
 #include <logicsim.hpp>
 
-#ifdef LGS_DEBUG
-#include <iostream>
-#endif
-
 #ifdef LGS_PROFILE
 #include <chrono>
 #include <string>
-#include <ncurses.h>
+#include <sstream>
+#include <ncursesio.hpp>
 #endif
 
 #include <cpuworker.hpp>
@@ -29,12 +26,18 @@ lgs::CPUWorker::CPUWorker(const unsigned int* crd, const int w, const int h, con
                 state_r[i] = false;
                 state_w[i] = false;
         }
+#ifdef LGS_PROFILE
+        prof_sec = new lgs::PrintSection();
+#endif
 }
 
 lgs::CPUWorker::~CPUWorker()
 {
         delete[] state_r;
         delete[] state_w;
+#ifdef LGS_PROFILE
+        delete prof_sec;
+#endif
 }
 
 void lgs::CPUWorker::sim_step(const bool* state_r, bool* state_w)
@@ -75,18 +78,18 @@ void lgs::CPUWorker::tickSimulation()
         t0 = std::chrono::steady_clock::now();
         profile_time_peripherals += t0 - t1;
         ++profile_n_ticks;
-        if(profile_n_ticks >= LGS_PROFILE_TICKS)
+        if(profile_n_ticks >= LGS_PROFILE_N_SAMPLES)
         {
                 profile_time_logic /= profile_n_ticks;
                 profile_time_peripherals /= profile_n_ticks;
-                printw("Average tick time over ");
-                printw(std::to_string(profile_n_ticks).c_str());
-                printw(" ticks for logic tick is ");
-                printw(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(profile_time_logic).count()).c_str());
-                printw(" microseconds and for peripheral tick is ");
-                printw(std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(profile_time_peripherals).count()).c_str());
-                printw("microseconds.\n");
-                refresh();
+                std::stringstream str;
+                str << "CPU Worker Profiling.\n";
+                str << "Average tick time over " << profile_n_ticks << " ticks for logic tick is ";
+                str << std::chrono::duration_cast<std::chrono::microseconds>(profile_time_logic).count();
+                str << " microseconds and for peripheral tick is ";
+                str << std::chrono::duration_cast<std::chrono::microseconds>(profile_time_peripherals).count();
+                str << "microseconds.\n";
+                prof_sec->setText(str.str());
                 profile_n_ticks = 0;
                 profile_time_logic = std::chrono::steady_clock::duration(0);
                 profile_time_peripherals = std::chrono::steady_clock::duration(0);
