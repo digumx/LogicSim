@@ -1,4 +1,6 @@
-A brief documentation / reference for various instruction sets/ op-codes related to Actininum.
+Actinium 3320 is a very simple 8-bit processor with a very simple and slow instruction set, 5 
+registers, 3 input and 3 output ports. A brief documentation / reference for various instruction 
+sets/ op-codes related to Actininum.
 
 ### Binary Operations Unit Selection Line Codes
 
@@ -49,17 +51,17 @@ where `ACC` refers to the accumulator:
 00110       | Flips every bit in ACC                                                                            |
 01000       | Reads data from operand's location, ADDs it to `ACC` as unsignned int, and stores in `ACC`.       |
 01001       | Interprets operand as constant, ADDs it to `ACC`, and stores result in `ACC`.                     |
-01100       | Shifts value of `ACC` to more significant side by as many places as value located at the operand. |
-01110       | Shifts value of `ACC` to less significant side by as many places as value located at the operand. |
-01101       | Shifts value of `ACC` to more significant side by as many places as value of the operand.         |
-01111       | Shifts value of `ACC` to less significant side by as many places as value of the operand.         |
+01100       | Shifts value of `ACC` to more significant side by as many places as value located at the operand.  |
+01110       | Shifts value of `ACC` to less significant side by as many places as value located at the operand.  |
+01101       | Shifts value of `ACC` to more significant side by as many places as value of the operand.          |
+01111       | Shifts value of `ACC` to less significant side by as many places as value of the operand.          |
 11000       | Reads data from operand's location and copies it to `ACC`.                                        |
 11001       | Interprets operand as constant and copies it to `ACC`.                                            |
 11100       | Copies `ACC` to location of operand.                                                              |
 10110       | Increases instruction address by value of operand, ie, jumps forward by value of operand.         |
 10111       | Jumps backward by value of operand.                                                               |
-10100       | If the most significant bit of ACC is 1, jumps forward by value of operand, else moves to next.   |
-10101       | If the most significant bit of ACC is 0, jumps backward by value of operand, else moves to next.  |
+10100       | If the most significant bit of ACC is 1, jumps forward by value of operand, else moves to next.    |
+10101       | If the most significant bit of ACC is 0, jumps backward by value of operand, else moves to next.   |
 
 ### Timings:
 
