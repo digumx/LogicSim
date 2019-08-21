@@ -8,3 +8,8 @@ binaries
 #ignore TestFiles
 TestFiles/*
 TestFiles
+
+#ignore output files
+*.out*
+*.out
+.out

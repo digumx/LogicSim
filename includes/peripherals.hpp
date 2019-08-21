@@ -22,13 +22,24 @@ namespace lgs
         class PrintSection;
 
         /*
+         * A container typedef to store the input or output locations of a peripheral. It's a vector of 3-tuples, first 2 members are the 
+         * location of the bit, last member is state.
+         */
+        typedef std::vector<std::tuple<int, int, bool>> PeripheralInterface;
+               
+        /*
          * An abstract base class for defining the peripheral interface.
          */
         class Peripheral
         {
+                protected:
+                        PeripheralInterface input_interface, output_interface;
                 public:
-                        Peripheral(const nlohmann::json& initJson) {}                                    // Force peripherals to provide constructor from json.
-                        virtual void tick(const bool* stateR, bool* stateW, int w, int h) = 0;          // Do whatever the peripheral does
+                        Peripheral(const nlohmann::json& initJson) {}                                   // Force peripherals to provide constructor from json.
+                                                                                                        // Should fill input_interface and output_interface.
+                        virtual void tick() = 0;                                                        // Do whatever the peripheral does
+                        PeripheralInterface& getInputInterface();                                       // Get interfaces between peripheral and circuit
+                        PeripheralInterface& getOutputInterface();
         };
 
         // The following are the peripherals currently supported by LogicSim
@@ -49,12 +60,11 @@ namespace lgs
         class LEDArray : public Peripheral
         {
                 private:
-                        std::vector<std::pair<int, int>> led_pos;
                         std::vector<std::string> led_labels;
                         lgs::PrintSection* section;
                 public:
                         LEDArray(const nlohmann::json& initJson);
-                        void tick(const bool* stateR, bool* stateW, int w, int h) override;
+                        void tick() override;
         };
 
         /*
@@ -74,11 +84,10 @@ namespace lgs
         class BitSwitchArray : public Peripheral
         {
                 private:
-                        std::vector<std::pair<int, int>> switch_pos;
                         std::vector<int> keys;
                 public:
                         BitSwitchArray(const nlohmann::json& initJson);
-                        void tick(const bool* stateR, bool* stateW, int w, int h) override;
+                        void tick() override;
         };
 
         /*
@@ -92,17 +101,12 @@ namespace lgs
         class Clock : public Peripheral
         {
                 private:
-                        int x, y;
                         std::chrono::steady_clock::duration period;
-                        bool state;
                         std::chrono::steady_clock::time_point previous;
 
-#ifdef LGS_DEBUG
-                        unsigned long int ticks = 0;
-#endif
                 public:
                         Clock(const nlohmann::json& initJson);
-                        void tick(const bool* stateR, bool* stateW, int w, int h) override;
+                        void tick() override;
         };
 
         /*
@@ -125,13 +129,11 @@ namespace lgs
          */
         class Keyboard : public Peripheral
         {
-                private:
-                        int key_pressed_x, key_pressed_y;
-                        std::array<int, 8> key_code_x, key_code_y;
-
+                // First output_interface entry is key pressed lane
+                // For next 8, ith entry is i-1th bit of key code.
                 public:
                         Keyboard(const nlohmann::json& initJson);
-                        void tick(const bool* stateR, bool* stateW, int w, int h) override;
+                        void tick() override;
         };
 
         /*
@@ -155,12 +157,13 @@ namespace lgs
         class CharStreamPrinter : public Peripheral
         {
                 private:
-                        int print_line_x, print_line_y;
                         bool print_line_prev;
-                        std::array<int, 8> char_lane_x, char_lane_y;
+
+                        // The first input_interface member is print line.
+                        // For next 8 members, ith member is i-1th bit of character lane.
                 public:
                         CharStreamPrinter(const nlohmann::json& initJson);
-                        void tick(const bool* stateR, bool* stateW, int w, int h) override;
+                        void tick() override;
         };
 
         /*

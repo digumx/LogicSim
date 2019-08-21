@@ -72,8 +72,21 @@ void lgs::CPUWorker::tickSimulation()
         t1 = std::chrono::steady_clock::now();
         profile_time_logic += t1 - t0;
 #endif
+
         for(std::vector<Peripheral*>::const_iterator peri = peripherals.begin(); peri != peripherals.end(); ++peri)
-                (*peri)->tick(state_r, state_w, width, height); 
+        {
+                PeripheralInterface& in = (*peri)->getInputInterface();
+                PeripheralInterface& out = (*peri)->getOutputInterface();
+                for(PeripheralInterface::iterator i = in.begin(); i != in.end(); ++i)
+                        if(std::get<0>(*i) >= 0 && std::get<0>(*i) < width && std::get<1>(*i) >= 0 && std::get<1>(*i) < height)
+                                std::get<2>(*i) = state_r[width * std::get<1>(*i) + std::get<0>(*i)];
+                (*peri)->tick();
+                for(PeripheralInterface::iterator i = out.begin(); i != out.end(); ++i)
+                        if(std::get<0>(*i) >= 0 && std::get<0>(*i) < width && std::get<1>(*i) >= 0 && std::get<1>(*i) < height)
+                                state_w[width * std::get<1>(*i) + std::get<0>(*i)] = std::get<2>(*i);
+
+        }
+
 #ifdef LGS_PROFILE
         t0 = std::chrono::steady_clock::now();
         profile_time_peripherals += t0 - t1;
