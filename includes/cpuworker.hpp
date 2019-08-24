@@ -6,6 +6,10 @@
 #define LGS_INCLUDE_CPU_WORKER 
 
 #include <vector>
+#include <cstdint>
+#include <array>
+
+#include <logicsim.hpp>
 
 #ifdef LGS_PROFILE
 #include <chrono>
@@ -20,6 +24,11 @@ namespace lgs
 #endif
 
         /*
+         * Typedef for packed type
+         */
+        typedef uint32_t pack_uint_t;
+
+        /*
          * A CPU worker class that simulates a specified chunk of the logic board. Handles its own state memory.
          *
          * Note: States outside the logic board boundary are assumed to be 0.
@@ -28,11 +37,11 @@ namespace lgs
         class CPUWorker
         {
                 private:
-                        const unsigned int* circuit_data;
-                        const int width;
+                        std::array<pack_uint_t*, 20> circuit_data;
+                        const int width;                                            // dimensions after packing
                         const int height;
-                        bool* state_r;                                          // Last state, to be read.
-                        bool* state_w;                                          // Next state, to be written.
+                        pack_uint_t* state_r;                                          // Last state, to be read.
+                        pack_uint_t* state_w;                                          // Next state, to be written.
                         const std::vector<Peripheral*> peripherals;                        
 #ifdef LGS_PROFILE
                         int profile_n_ticks;
@@ -42,13 +51,19 @@ namespace lgs
 #endif 
 
 
-                        void sim_step(const bool* state_r, bool* state_w);      // Simulate one step
+                        void sim_step(const pack_uint_t* state_r, pack_uint_t* state_w);      // Simulate one step
                 public:
-                        CPUWorker(const unsigned int* crd, const int w, const int h, const std::vector<Peripheral*>& ps);    // crd is circuit_data
+                        CPUWorker(const unsigned int* crd,                      // 2d array of uints, each uint contains 20 bits of circuit
+                                                                                // data in the order they appear in RGB encoding.
+                                        const int w, const int h,               // dimensions of crd
+                                        const std::vector<Peripheral*>& ps);    // peripherals
                         ~CPUWorker();
 
                         void tickSimulation();                                  // Simulate one step
-                        const bool* getState();                                 // Returns current(last) state. Does not allow state to be modified externally. 
+                        bool getStateAt(int x_u, int y_u);                      // Get state at unpacked coords (x_u, y_u).
+                        void setStateAt(int x_u, int y_u, bool state);          // Set state at unpacked coords (x_u, y_u).
+                        bool* getState();                                       // Returns copy of current(last) state, unpacked. 
+                                                                                // Does not allow state to be modified externally. 
 
         };
 }

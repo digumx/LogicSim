@@ -57,8 +57,18 @@
 #define LGS_GIF_COLOR_1_A 255
 
 /*
- * The number of milliseconds to wait between listening for keyboard events. Use the time-keyboard script to find the system-specific optimal value.
+ * The number of milliseconds to wait between listening for keyboard events. Use the time-keyboard script to find the 
+ * system-specific optimal value.
  */
 #define LGS_KEYBOARD_WAIT_TIME 25
+
+/*
+ * To optimise tick rate, bools are packed into uints as a LGS_PACK_WIDTH X LGS_PACK_HEIGHT block. Note, must satisfy 
+ * LGS_PACK_WIDTH X LGS_PACK_HEIGHT <= sizeof(lgs::pack_uint_t), equality is most optimal. See cpuworker.hpp for definition
+ * of lgs::pack_uint_t.
+ */
+#define LGS_PACK_WIDTH 8
+#define LGS_PACK_HEIGHT 4
+
 
 #endif 
